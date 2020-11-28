@@ -7,6 +7,7 @@
 #include "low_system.h"
 
 #include <pthread.h>
+#include <ctype.h>
 
 #include <open62541/client.h>
 #include <open62541/client_config_default.h>

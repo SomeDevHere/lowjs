@@ -7,6 +7,7 @@
 
 #include "low_alloc.h"
 
+#include <ctype.h>
 
 // -----------------------------------------------------------------------------
 //  low_crypto_create_hash

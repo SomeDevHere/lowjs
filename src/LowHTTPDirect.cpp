@@ -10,6 +10,7 @@
 #include "low_config.h"
 
 #include <errno.h>
+#include <ctype.h>
 
 
 void add_stats(int index, bool add);
