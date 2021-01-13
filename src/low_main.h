@@ -34,6 +34,11 @@ struct low_t
     bool destroying;
     duk_context *duk_ctx, *next_tick_ctx;
 
+#if !LOW_ESP32_LWIP_SPECIALITIES
+    unsigned int heap_size, max_heap_size;
+#endif /* !LOW_ESP32_LWIP_SPECIALITIES */
+    bool in_gc, disallow_native;
+
     int run_ref, last_stash_index;
 
     int signal_call_id;
@@ -56,7 +61,6 @@ struct low_t
 
     LowLoopCallback *loop_callback_first, *loop_callback_last;
 
-    LowDataCallback *data_thread_at;
     pthread_mutex_t data_thread_mutex;
     pthread_cond_t data_thread_cond, data_thread_done_cond;
     LowDataCallback *data_callback_first[2], *data_callback_last[2];

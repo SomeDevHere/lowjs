@@ -1,13 +1,13 @@
 {
   "name": "lowjs",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "The Node.JS port for embedded devices.",
   "author": "neonious GmbH",
   "scripts": {
     "test": "cd test/tests_script && ts-node tests.ts"
   },
   "devDependencies": {
-    "@babel/standalone": "^7.6.4",
+    "@babel/standalone": "7.6.4",
     "ts-node": "^7.0.1",
     "typescript": "3.1.6"
   }
