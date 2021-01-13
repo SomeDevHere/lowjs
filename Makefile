@@ -1,13 +1,11 @@
 FLAGS = -O3 -DLOW_VERSION="\"`git show -s --format=%cd --date=format:%Y%m%d`_`git rev-parse --short HEAD`\""
 
-C = gcc
 CFLAGS = $(FLAGS) -Isrc -Iapp -Ideps/duktape/src-low -Ideps/mbedtls/include -Ideps/mbedtls/crypto/include
 
-CXX = g++
 CXXFLAGS = $(CXXFLAGS_SERV) $(FLAGS) -Isrc -Iapp -Ideps/duktape/src-low -Ideps/mbedtls/include -Ideps/mbedtls/crypto/include -Ideps/open62541/build/src_generated -Ideps/open62541/include -Ideps/open62541/arch -Ideps/open62541/plugins/include -Ideps/open62541/src/client -Ideps/open62541/deps -Ideps/open62541/src --std=c++11
 
-LD = g++
-LDFLAGS = $(FLAGS) -lm -ldl -lpthread deps/open62541/build/bin/libopen62541.a -lresolv
+LD = $(CXX)
+LDFLAGS = $(LDFLAGS_SERV) $(FLAGS) -lm -ldl -lpthread deps/open62541/build/bin/libopen62541.a -lresolv
 
 OBJECTS_LOW =						\
 	app/main.o						\
@@ -64,7 +62,7 @@ bin/low: $(OBJECTS) $(OBJECTS_LOW) deps/mbedtls/programs/test/benchmark
 bin_lowjs_serv: $(OBJECTS) $(OBJECTS_LOW) deps/mbedtls/programs/test/benchmark util/dukc
 
 util/dukc: deps/duktape/src-low/duktape.o util/dukc.o
-	 $(LD) -o util/dukc deps/duktape/src-low/duktape.o util/dukc.o $(LDFLAGS)
+	 $(LD) -o util/dukc deps/duktape/src-low/duktape.o util/dukc.o $(LDFLAGS) $(EXTFLAGS)
 
 test/bugs/duk_crash_TR20180627: deps/duktape/src-low/duktape.o test/bugs/duk_crash_TR20180627.o
 	 $(LD) -o test/bugs/duk_crash_TR20180627 deps/duktape/src-low/duktape.o test/bugs/duk_crash_TR20180627.o $(LDFLAGS)
@@ -75,7 +73,7 @@ test/bugs/duk_crash_TR20180706: deps/duktape/src-low/duktape.o test/bugs/duk_cra
 deps/duktape/src-low/duktape.o: deps/duktape/src-low/duktape.c Makefile
 	$(CXX) $(CXXFLAGS) -MMD -o $@ -c $<
 %.o : %.c Makefile
-	$(C) $(CFLAGS) -MMD -o $@ -c $<
+	$(CC) $(CFLAGS) -MMD -o $@ -c $<
 %.o : %.cpp Makefile deps/c-ares/.libs/libcares.a deps/open62541/build/bin/libopen62541.a
 	$(CXX) $(CXXFLAGS) -MMD -o $@ -c $<
 
@@ -120,7 +118,7 @@ deps/duktape/src-low/duktape.c: $(shell find deps/duktape/src-input)
 deps/c-ares/configure:
 	cd deps/c-ares && . ./buildconf
 deps/c-ares/Makefile: deps/c-ares/configure
-	cd deps/c-ares && ./configure
+	cd deps/c-ares && ./configure --disable-shared --disable-tests CFLAGS="$(CFLAGS_DEPS)" LDFLAGS="$(LDFLAGS_DEPS)"
 deps/c-ares/.libs/libcares.a: deps/c-ares/Makefile
 	cd deps/c-ares && make
 
@@ -129,7 +127,7 @@ deps/mbedtls/programs/test/benchmark:
 
 deps/open62541/build/bin/libopen62541.a:
 	cd deps/open62541 && rm -rf build && mkdir build
-	cd deps/open62541/build && cmake ..
+	cd deps/open62541/build && cmake .. -DCMAKE_BUILD_TYPE=Release
 	cd deps/open62541/build && make
 
 # Builds distribution
